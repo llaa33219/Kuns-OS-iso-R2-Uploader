@@ -1,0 +1,19 @@
+name = "kuns-os-iso-uploader"
+main = "src/index.js"
+compatibility_date = "2025-06-30"
+
+# Serve static assets from the "public" directory
+[site]
+bucket = "public"
+
+# R2 bucket binding
+[[r2_buckets]]
+binding = "R2_BUCKET" # This must match the binding name used in src/index.js
+bucket_name = "kuns-os-iso" # TODO: Replace with your actual R2 bucket name
+
+# Environment variables for the worker
+[vars]
+# TODO: You need to either set your public R2 URL here
+R2_PUBLIC_URL = "https://pub-b07fe62220cc44a2a1cb2694842cf8e9.r2.dev"
+# OR your Cloudflare Account ID
+# ACCOUNT_ID = "<YOUR_CLOUDFLARE_ACCOUNT_ID>" 
