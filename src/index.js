@@ -21,9 +21,19 @@ export default {
             }
         }
         
-        // Serve static assets from the "public" directory.
-        // `env.ASSETS` is automatically configured by Wrangler when you set [site].
-        return env.ASSETS.fetch(request);
+        // Fallback to serving static assets
+        if (env.ASSETS) {
+            try {
+                 return await env.ASSETS.fetch(request);
+            } catch (e) {
+                // When a requested asset is not found, `env.ASSETS.fetch` throws an exception.
+                // We can generate a 404 response instead.
+                 const pathname = new URL(request.url).pathname;
+                 return new Response(`Asset not found: ${pathname}`, { status: 404 });
+            }
+        } else {
+            return new Response('Static asset serving is not configured. Check [site] in wrangler.toml.', { status: 500 });
+        }
     },
 };
 
