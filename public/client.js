@@ -81,7 +81,7 @@ uploadButton.addEventListener('click', async () => {
             }
 
             const { etag } = await uploadPartResponse.json();
-            uploadedParts.push({ partNumber, etag: etag });
+            uploadedParts.push({ partNumber, ETag: etag });
         }
 
         // 3. Complete multipart upload

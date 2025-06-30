@@ -88,24 +88,24 @@ async function handleCompleteUpload(request, env) {
         return new Response('Method Not Allowed', { status: 405 });
     }
 
-    const { key, uploadId, parts } = await request.json();
+    try {
+        const { key, uploadId, parts } = await request.json();
 
-    if (!key || !uploadId || !Array.isArray(parts)) {
-        return new Response('Missing required fields', { status: 400 });
+        if (!key || !uploadId || !Array.isArray(parts)) {
+            return new Response('Request body missing key, uploadId, or parts', { status: 400 });
+        }
+
+        const multipartUpload = env.R2_BUCKET.resumeMultipartUpload(key, uploadId);
+        const object = await multipartUpload.complete(parts);
+
+        const publicUrl = env.R2_PUBLIC_URL || `https://pub-${env.ACCOUNT_ID}.r2.dev`;
+        const location = `${publicUrl}/${object.key}`;
+
+        return new Response(JSON.stringify({ location }), {
+            headers: { 'Content-Type': 'application/json' },
+        });
+    } catch (error) {
+        console.error('Error completing multipart upload:', error.message);
+        return new Response(`Failed to complete upload: ${error.message}`, { status: 500 });
     }
-
-    const object = await env.R2_BUCKET.completeMultipartUpload(
-        key,
-        uploadId,
-        parts
-    );
-
-    // The public URL of your R2 bucket.
-    // You should replace this with your actual public URL by setting the R2_PUBLIC_URL environment variable.
-    const publicUrl = env.R2_PUBLIC_URL || `https://pub-${env.ACCOUNT_ID}.r2.dev`;
-    const location = `${publicUrl}/${object.key}`;
-
-    return new Response(JSON.stringify({ location }), {
-        headers: { 'Content-Type': 'application/json' },
-    });
 } 
