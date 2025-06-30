@@ -12,6 +12,8 @@ export default {
                         return await handleUploadPart(request, env);
                     case '/api/complete-upload':
                         return await handleCompleteUpload(request, env);
+                    case '/api/list-files':
+                        return await handleListFiles(request, env);
                     default:
                         return new Response('API endpoint not found', { status: 404 });
                 }
@@ -36,6 +38,30 @@ export default {
         }
     },
 };
+
+async function handleListFiles(request, env) {
+    if (request.method !== 'GET') {
+        return new Response('Method Not Allowed', { status: 405 });
+    }
+
+    const listResult = await env.R2_BUCKET.list();
+    
+    // In a real application, you should handle pagination via `listResult.truncated` and `listResult.cursor`.
+    // For this example, we'll just return the first batch.
+
+    const publicUrl = env.R2_PUBLIC_URL || `https://pub-${env.ACCOUNT_ID}.r2.dev`;
+
+    const files = listResult.objects.map(obj => ({
+        name: obj.key,
+        url: `${publicUrl}/${obj.key}`,
+        uploaded: obj.uploaded.toISOString(),
+        size: obj.size,
+    }));
+
+    return new Response(JSON.stringify(files), {
+        headers: { 'Content-Type': 'application/json' },
+    });
+}
 
 async function handleStartUpload(request, env) {
     if (request.method !== 'POST') {
