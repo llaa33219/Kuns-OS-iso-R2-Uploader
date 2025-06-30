@@ -77,11 +77,11 @@ uploadButton.addEventListener('click', async () => {
             
             if (!uploadPartResponse.ok) {
                  const errorBody = await uploadPartResponse.text();
-                 throw new Error(`청크 ${partNumber} 업로드 실패: ${uploadPartResponse.status} ${errorBody}`);
+                 throw new Error(`청크 ${partNumber}/${totalChunks} 업로드 실패: ${uploadPartResponse.status} ${errorBody}`);
             }
 
-            const { etag } = await uploadPartResponse.json();
-            uploadedParts.push({ partNumber, ETag: etag });
+            const uploadedPart = await uploadPartResponse.json();
+            uploadedParts.push(uploadedPart);
         }
 
         // 3. Complete multipart upload

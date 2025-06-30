@@ -78,7 +78,8 @@ async function handleUploadPart(request, env) {
     const multipartUpload = env.R2_BUCKET.resumeMultipartUpload(key, uploadId);
     const uploadedPart = await multipartUpload.uploadPart(partNumber, request.body);
 
-    return new Response(JSON.stringify({ etag: uploadedPart.etag }), {
+    // Return the entire R2UploadedPart object.
+    return new Response(JSON.stringify(uploadedPart), {
         headers: { 'Content-Type': 'application/json' },
     });
 }
