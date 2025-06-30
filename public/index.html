@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuns OS ISO Uploader</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Kuns OS ISO Uploader</h1>
+        <p>R2 버킷에 대용량 파일을 분할 업로드합니다.</p>
+        <div class="upload-area">
+            <input type="file" id="file-input">
+            <label for="file-input" id="file-label">파일을 선택하거나 여기로 드래그하세요</label>
+            <button id="upload-button" disabled>업로드 시작</button>
+        </div>
+        <div id="status"></div>
+        <div id="result"></div>
+    </div>
+    <script src="client.js"></script>
+</body>
+</html> 
