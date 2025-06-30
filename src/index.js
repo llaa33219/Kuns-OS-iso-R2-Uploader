@@ -75,7 +75,8 @@ async function handleUploadPart(request, env) {
         return new Response('Missing required query parameters', { status: 400 });
     }
 
-    const uploadedPart = await env.R2_BUCKET.uploadPart(key, uploadId, partNumber, request.body);
+    const multipartUpload = env.R2_BUCKET.resumeMultipartUpload(key, uploadId);
+    const uploadedPart = await multipartUpload.uploadPart(partNumber, request.body);
 
     return new Response(JSON.stringify({ etag: uploadedPart.etag }), {
         headers: { 'Content-Type': 'application/json' },
