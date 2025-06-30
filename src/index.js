@@ -2,22 +2,28 @@ export default {
     async fetch(request, env, ctx) {
         const url = new URL(request.url);
 
-        try {
-            switch (url.pathname) {
-                case '/api/start-upload':
-                    return await handleStartUpload(request, env);
-                case '/api/upload-part':
-                    return await handleUploadPart(request, env);
-                case '/api/complete-upload':
-                    return await handleCompleteUpload(request, env);
-                default:
-                    // In a real-world scenario, you would serve your static assets here.
-                    // For this example, we only focus on the API.
-                    return new Response('Not found', { status: 404 });
+        // API routes
+        if (url.pathname.startsWith('/api/')) {
+            try {
+                switch (url.pathname) {
+                    case '/api/start-upload':
+                        return await handleStartUpload(request, env);
+                    case '/api/upload-part':
+                        return await handleUploadPart(request, env);
+                    case '/api/complete-upload':
+                        return await handleCompleteUpload(request, env);
+                    default:
+                        return new Response('API endpoint not found', { status: 404 });
+                }
+            } catch (e) {
+                console.error(e);
+                return new Response(e.message || 'Something went wrong with the API', { status: 500 });
             }
-        } catch (e) {
-            return new Response(e.message || 'Something went wrong', { status: 500 });
         }
+        
+        // Serve static assets from the "public" directory.
+        // `env.ASSETS` is automatically configured by Wrangler when you set [site].
+        return env.ASSETS.fetch(request);
     },
 };
 
